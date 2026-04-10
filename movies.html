@@ -1,0 +1,444 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Orbit — Cinema</title>
+    <link rel="icon" href="/logo.png" type="image/png" />
+    <link rel="stylesheet" href="/orbit.css" />
+    <script src="/orbit-prefs.js"></script>
+    <style>
+      body {
+        display: grid;
+        grid-template-columns: 280px 1fr;
+        height: 100vh;
+        overflow: hidden;
+        padding-bottom: 0;
+      }
+
+      .sidebar {
+        background: rgba(0, 0, 0, 0.8);
+        backdrop-filter: blur(20px);
+        border-right: 1px solid var(--border);
+        padding: 24px;
+        display: flex;
+        flex-direction: column;
+        gap: 30px;
+      }
+
+      .sidebar-section h3 {
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        letter-spacing: 0.2em;
+        color: var(--text-muted);
+        margin-bottom: 15px;
+      }
+
+      .sidebar-nav {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .nav-btn {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid var(--border);
+        color: rgba(255, 255, 255, 0.7);
+        padding: 10px 15px;
+        text-align: left;
+        font-family: inherit;
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        cursor: pointer;
+        border-radius: 4px;
+        transition: all 0.2s;
+      }
+
+      .nav-btn:hover {
+        background: rgba(255, 255, 255, 0.08);
+        border-color: rgba(255, 255, 255, 0.3);
+        color: #fff;
+      }
+
+      main {
+        display: flex;
+        flex-direction: column;
+        background: #000;
+      }
+
+      .top-bar {
+        background: rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(20px);
+        border-bottom: 1px solid var(--border);
+        padding: 15px 24px;
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+      }
+
+      .bar-header h2 {
+        font-size: 1.2rem;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+      }
+
+      .bar-header p {
+        font-size: 0.85rem;
+        color: var(--text-muted);
+      }
+
+      .toolbar {
+        display: flex;
+        gap: 12px;
+      }
+
+      .toolbar input {
+        flex: 1;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid var(--border);
+        border-radius: 20px;
+        color: #fff;
+        padding: 8px 20px;
+        font-family: inherit;
+        outline: none;
+      }
+
+      .v-btn {
+        background: #fff;
+        color: #000;
+        border: none;
+        padding: 0 20px;
+        height: 36px;
+        border-radius: 18px;
+        font-family: inherit;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        cursor: pointer;
+        transition: transform 0.2s;
+      }
+
+      .v-btn:hover {
+        transform: scale(1.05);
+      }
+
+      .v-btn.secondary {
+        background: rgba(255, 255, 255, 0.1);
+        color: #fff;
+      }
+
+      .frame-container {
+        flex: 1;
+        padding: 20px;
+        padding-bottom: 80px;
+      }
+
+      .frame-wrapper {
+        width: 100%;
+        height: 100%;
+        border-radius: 8px;
+        overflow: hidden;
+        border: 1px solid var(--border);
+        background: #000;
+      }
+
+      #cinebyFrame {
+        width: 100%;
+        height: 100%;
+        border: none;
+      }
+
+      /* ===== PLAYER OVERLAY ===== */
+      #playerOverlay {
+        position: fixed;
+        inset: 0;
+        background: #000;
+        z-index: 2000;
+        display: none;
+        flex-direction: column;
+      }
+
+      #playerOverlay.open {
+        display: flex;
+      }
+
+      #playerFrame {
+        flex: 1;
+        width: 100%;
+        height: 100%;
+        border: none;
+        background: #000;
+      }
+
+      .player-bar {
+        height: 60px;
+        background: rgba(0, 0, 0, 0.9);
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 20px;
+      }
+
+      @media (max-width: 900px) {
+        body {
+          grid-template-columns: 1fr;
+        }
+        .sidebar {
+          display: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <aside class="sidebar">
+      <a href="/" class="logo-consistent">
+        <div class="saturn-unified">
+          <div class="rings"></div>
+          <div class="planet"></div>
+        </div>
+        <span>Orbit</span>
+      </a>
+
+      <div class="sidebar-section">
+        <h3>Quick Access</h3>
+        <div class="sidebar-nav">
+          <button class="nav-btn" onclick="loadUrl('https://www.cineby.xyz/')">
+            Home
+          </button>
+          <button
+            class="nav-btn"
+            onclick="loadUrl('https://www.cineby.xyz/movies/genre/action?sort=popular')"
+          >
+            Action
+          </button>
+          <button
+            class="nav-btn"
+            onclick="loadUrl('https://www.cineby.xyz/movies/genre/science-fiction?sort=popular')"
+          >
+            Sci-Fi
+          </button>
+          <button
+            class="nav-btn"
+            onclick="loadUrl('https://www.cineby.xyz/movies/genre/drama?sort=rating')"
+          >
+            Drama
+          </button>
+          <button
+            class="nav-btn"
+            onclick="loadUrl('https://www.cineby.xyz/movies/genre/adventure/year/2025')"
+          >
+            2025 Adventure
+          </button>
+        </div>
+      </div>
+
+      <div class="sidebar-section">
+        <h3>Engine Status</h3>
+        <p
+          id="statusText"
+          style="font-size: 0.8rem; color: var(--text-muted); line-height: 1.5"
+        >
+          Scanning the iframe URL for a TMDb id...
+        </p>
+        <p
+          id="currentPath"
+          style="
+            font-size: 0.65rem;
+            color: rgba(255, 255, 255, 0.2);
+            margin-top: 8px;
+            word-break: break-all;
+          "
+        >
+          https://www.cineby.xyz/
+        </p>
+      </div>
+    </aside>
+
+    <main>
+      <div class="top-bar">
+        <div class="bar-header">
+          <h2>Orbit Cinema</h2>
+          <p>
+            Browse through the proxy, or paste a Cineby URL. As soon as a TMDb
+            id is found, VidKing takes over.
+          </p>
+        </div>
+        <div class="toolbar">
+          <input
+            type="text"
+            id="cinebyInput"
+            placeholder="Search Cineby or paste URL..."
+            autocomplete="off"
+          />
+          <button class="v-btn" onclick="handleLoad()">Load</button>
+          <button class="v-btn secondary" onclick="openDirect()">
+            Open Tab
+          </button>
+          <button class="v-btn secondary" onclick="openBlank()">
+            About:Blank
+          </button>
+          <button class="v-btn secondary" onclick="openSettings()">
+            Settings
+          </button>
+        </div>
+      </div>
+
+      <div class="frame-container">
+        <div class="frame-wrapper">
+          <iframe id="cinebyFrame" title="Orbit Cinema"></iframe>
+        </div>
+      </div>
+    </main>
+
+    <div id="playerOverlay">
+      <div class="player-bar">
+        <div class="viewer-title" id="playerStatus">
+          VidKing Player — Waiting for title...
+        </div>
+        <div class="viewer-actions">
+          <button class="v-btn" onclick="openPlayerTab()">New Tab</button>
+          <button class="v-btn close" onclick="closePlayer()">Close</button>
+        </div>
+      </div>
+      <iframe
+        id="playerFrame"
+        allowfullscreen
+        referrerpolicy="no-referrer"
+      ></iframe>
+    </div>
+
+    <div id="taskbar"></div>
+
+    <script src="/orbit-global.js"></script>
+    <script>
+      const CINEBY_BASE = "https://www.cineby.xyz";
+      const VIDKING_BASE = "https://www.vidking.net/embed/movie/";
+      const frame = document.getElementById("cinebyFrame");
+      const input = document.getElementById("cinebyInput");
+      const playerOverlay = document.getElementById("playerOverlay");
+      const playerFrame = document.getElementById("playerFrame");
+      const statusText = document.getElementById("statusText");
+      const currentPath = document.getElementById("currentPath");
+
+      let activeTmdbId = "";
+      let closedTmdbId = "";
+
+      function loadUrl(url) {
+        frame.src = "/scramjet/" + btoa(url);
+        input.value = url;
+        // When user manually navigates, we can reset the closed ID
+        closedTmdbId = "";
+      }
+
+      function handleLoad() {
+        const val = input.value.trim();
+        if (!val) return;
+        const target = val.startsWith("http")
+          ? val
+          : `${CINEBY_BASE}/search?q=${encodeURIComponent(val)}`;
+        loadUrl(target);
+      }
+
+      function openDirect() {
+        const val = input.value.trim() || CINEBY_BASE;
+        window.open(
+          val.startsWith("http")
+            ? val
+            : `${CINEBY_BASE}/search?q=${encodeURIComponent(val)}`,
+          "_blank",
+        );
+      }
+
+      function openBlank() {
+        const val = input.value.trim() || CINEBY_BASE;
+        const target = val.startsWith("http")
+          ? val
+          : `${CINEBY_BASE}/search?q=${encodeURIComponent(val)}`;
+        const win = window.open();
+        win.document.body.style.margin = "0";
+        win.document.body.style.height = "100vh";
+        const ifr = win.document.createElement("iframe");
+        ifr.style.border = "none";
+        ifr.style.width = "100%";
+        ifr.style.height = "100%";
+        ifr.src = target;
+        win.document.body.appendChild(ifr);
+      }
+
+      function extractTmdbId(url) {
+        if (!url) return "";
+        const haystack = String(url);
+        const patterns = [
+          /\/watch\/([0-9]{3,})(?:[/?#]|$)/i,
+          /[?&](?:tmdb|tmdbId|tmdb_id|movieId|id)=([0-9]{3,})/i,
+          /[?&]watch=([0-9]{3,})/i,
+          /\/(?:movie|movies|title|tmdb)\/([0-9]{3,})(?:[/?#]|$)/i,
+          /tmdb(?:id|_id)?[:=/]([0-9]{3,})/i,
+        ];
+
+        for (const pattern of patterns) {
+          const match = haystack.match(pattern);
+          if (match) return match[1];
+        }
+        return "";
+      }
+
+      setInterval(() => {
+        try {
+          const currentUrl = frame.contentWindow.location.href;
+          currentPath.textContent = currentUrl;
+          const tmdbId = extractTmdbId(currentUrl);
+
+          if (tmdbId && tmdbId !== activeTmdbId && tmdbId !== closedTmdbId) {
+            activeTmdbId = tmdbId;
+            openPlayer(tmdbId);
+          } else if (!tmdbId) {
+            statusText.textContent = "Scanning the iframe URL for a TMDb id...";
+            activeTmdbId = "";
+            closedTmdbId = ""; // Reset when they navigate away from a movie page
+          }
+        } catch (e) {
+          // Cross-origin might block URL reading
+        }
+      }, 1000);
+
+      function openPlayer(id) {
+        const params = new URLSearchParams({
+          autoPlay: "true",
+          autoplay: "1",
+          color: "fc2651",
+          primaryColor: "fc2651",
+          accentColor: "ffffff",
+          secondaryColor: "0b0b0b",
+          textColor: "ffffff",
+        });
+        playerFrame.src = `${VIDKING_BASE}${id}?${params.toString()}`;
+        playerOverlay.classList.add("open");
+        document.getElementById("playerStatus").textContent =
+          `VidKing Player — TMDB: ${id}`;
+        statusText.textContent = `Playing title ID: ${id}`;
+      }
+
+      function closePlayer() {
+        playerOverlay.classList.remove("open");
+        playerFrame.src = "about:blank";
+        closedTmdbId = activeTmdbId;
+        activeTmdbId = "";
+      }
+
+      function openPlayerTab() {
+        if (activeTmdbId)
+          window.open(`${VIDKING_BASE}${activeTmdbId}`, "_blank");
+      }
+
+      function openSettings() {
+        window.location.href = "/settings.html";
+      }
+
+      // Initial load
+      loadUrl(CINEBY_BASE);
+    </script>
+  </body>
+</html>

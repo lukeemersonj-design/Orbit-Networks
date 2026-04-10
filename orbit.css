@@ -1,0 +1,213 @@
+/* Orbit Global Styles & Continuity */
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap");
+
+:root {
+  --bg: #000000;
+  --accent: #ffffff;
+  --text-main: #ffffff;
+  --text-muted: rgba(255, 255, 255, 0.5);
+  --border: rgba(255, 255, 255, 0.1);
+  --panel-bg: rgba(255, 255, 255, 0.05);
+  --taskbar-bg: rgba(0, 0, 0, 0.85);
+  --taskbar-blur: 20px;
+  --transition-speed: 0.3s;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: "Inter", system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--text-main);
+  overflow-x: hidden;
+  opacity: 0;
+  animation: fadeIn var(--transition-speed) ease forwards;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ===== TASKBAR ===== */
+#taskbar {
+  position: fixed;
+  bottom: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  height: 48px;
+  background: var(--taskbar-bg);
+  backdrop-filter: blur(var(--taskbar-blur));
+  -webkit-backdrop-filter: blur(var(--taskbar-blur));
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+  gap: 4px;
+  z-index: 1000;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+  transition: all var(--transition-speed) cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+#taskbar:hover {
+  border-color: rgba(255, 255, 255, 0.2);
+  background: rgba(0, 0, 0, 0.9);
+}
+
+.tb-section {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.tb-btn {
+  height: 36px;
+  padding: 0 14px;
+  border-radius: 18px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-muted);
+  text-decoration: none;
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  transition: all 0.2s ease;
+}
+
+.tb-btn i,
+.tb-btn span.tb-icon {
+  font-size: 0.9rem;
+}
+
+.tb-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+.tb-btn.active {
+  background: #fff;
+  color: #000;
+}
+
+.tb-divider {
+  width: 1px;
+  height: 20px;
+  background: var(--border);
+  margin: 0 8px;
+}
+
+.tb-info {
+  padding: 0 12px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  border-left: 1px solid var(--border);
+  margin-left: 4px;
+}
+
+.tb-clock {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #fff;
+  line-height: 1;
+}
+
+.tb-date {
+  font-size: 0.6rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-top: 2px;
+}
+
+.tb-orbit-logo {
+  width: 24px;
+  height: 24px;
+  margin-right: 4px;
+}
+
+/* Orbit button for proxy */
+.tb-back-orbit {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.tb-back-orbit:hover {
+  background: #fff;
+  color: #000;
+}
+
+/* ===== GLOBAL UI ELEMENTS ===== */
+.logo-consistent {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+  color: #fff;
+}
+
+.logo-consistent img {
+  width: 32px;
+  height: 32px;
+}
+
+.logo-consistent span {
+  font-size: 1.2rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+/* SATURN ANIMATION UNIFIED */
+.saturn-unified {
+  position: relative;
+  width: 40px;
+  height: 40px;
+}
+
+.saturn-unified .planet {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 24px;
+  height: 24px;
+  background: radial-gradient(circle at 30% 30%, #555, #000);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 2;
+  box-shadow: inset -2px -2px 5px rgba(0, 0, 0, 0.8), 0 0 15px rgba(255, 255, 255, 0.1);
+}
+
+.saturn-unified .rings {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 44px;
+  height: 14px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  transform: translate(-50%, -50%) rotateX(75deg);
+  z-index: 1;
+}
+
+/* Remove text walls */
+.text-wall-clean {
+  max-width: 600px;
+  line-height: 1.6;
+  color: var(--text-muted);
+  font-size: 0.95rem;
+}

@@ -1,0 +1,420 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Orbit — Settings</title>
+    <link rel="icon" href="/logo.png" type="image/png" />
+    <link rel="stylesheet" href="/orbit.css" />
+    <script src="/orbit-prefs.js"></script>
+    <style>
+      body {
+        display: grid;
+        grid-template-columns: 320px 1fr;
+        height: 100vh;
+        overflow: hidden;
+        padding-bottom: 0;
+      }
+
+      .sidebar {
+        background: rgba(0, 0, 0, 0.8);
+        backdrop-filter: blur(20px);
+        border-right: 1px solid var(--border);
+        padding: 24px;
+        display: flex;
+        flex-direction: column;
+        gap: 30px;
+      }
+
+      .sidebar-section h3 {
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        letter-spacing: 0.2em;
+        color: var(--text-muted);
+        margin-bottom: 15px;
+      }
+
+      .info-card {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid var(--border);
+        padding: 20px;
+        border-radius: 8px;
+        font-size: 0.85rem;
+        color: var(--text-muted);
+        line-height: 1.6;
+      }
+
+      main {
+        padding: 40px;
+        overflow-y: auto;
+        background: #000;
+        padding-bottom: 100px;
+      }
+
+      .hero {
+        margin-bottom: 40px;
+      }
+
+      .hero h1 {
+        font-size: 2rem;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        margin-bottom: 10px;
+      }
+
+      .hero p {
+        font-size: 0.9rem;
+        color: var(--text-muted);
+        max-width: 600px;
+        line-height: 1.6;
+      }
+
+      .settings-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 30px;
+      }
+
+      .panel h2 {
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.3em;
+        color: var(--text-muted);
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .panel h2::after {
+        content: "";
+        flex: 1;
+        height: 1px;
+        background: var(--border);
+      }
+
+      .preset-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 12px;
+        max-height: 400px;
+        overflow-y: auto;
+        padding-right: 8px;
+      }
+
+      .preset-grid::-webkit-scrollbar {
+        width: 4px;
+      }
+
+      .preset-grid::-webkit-scrollbar-track {
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 4px;
+      }
+
+      .preset-grid::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 4px;
+      }
+
+      .preset-btn {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        background: rgba(255, 255, 255, 0.02);
+        border: 1px solid var(--border);
+        padding: 12px 15px;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.2s;
+        text-align: left;
+        color: #fff;
+        width: 100%;
+        font-family: inherit;
+      }
+
+      .preset-btn:hover {
+        background: rgba(255, 255, 255, 0.05);
+        border-color: rgba(255, 255, 255, 0.3);
+        transform: translateX(4px);
+      }
+
+      .preset-btn.active {
+        background: rgba(255, 255, 255, 0.08);
+        border-color: #fff;
+        box-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
+      }
+
+      .preset-icon {
+        width: 32px;
+        height: 32px;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        flex-shrink: 0;
+      }
+
+      .preset-icon img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+      }
+
+      .preset-icon .svg-icon {
+        width: 28px;
+        height: 28px;
+      }
+
+      .preset-meta {
+        flex: 1;
+      }
+
+      .preset-meta .name {
+        font-size: 0.85rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        display: block;
+        margin-bottom: 2px;
+      }
+
+      .preset-meta .desc {
+        font-size: 0.7rem;
+        color: var(--text-muted);
+      }
+
+      .footer-actions {
+        margin-top: 40px;
+        display: flex;
+        gap: 15px;
+        flex-wrap: wrap;
+      }
+
+      .btn {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid var(--border);
+        color: #fff;
+        padding: 12px 24px;
+        border-radius: 25px;
+        font-family: inherit;
+        font-size: 0.8rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+
+      .btn:hover {
+        background: rgba(255, 255, 255, 0.1);
+        border-color: rgba(255, 255, 255, 0.3);
+        transform: translateY(-2px);
+      }
+
+      .btn.danger {
+        background: rgba(255, 50, 50, 0.1);
+        border-color: rgba(255, 50, 50, 0.2);
+        color: #ff5050;
+      }
+
+      .btn.danger:hover {
+        background: #ff5050;
+        color: #fff;
+        border-color: #ff5050;
+      }
+
+      .badge-new {
+        background: rgba(255, 255, 255, 0.15);
+        padding: 2px 8px;
+        border-radius: 12px;
+        font-size: 0.6rem;
+        font-weight: 600;
+        margin-left: 8px;
+        letter-spacing: 0.05em;
+      }
+
+      @media (max-width: 900px) {
+        body {
+          grid-template-columns: 1fr;
+        }
+        .sidebar {
+          display: none;
+        }
+        .settings-grid {
+          grid-template-columns: 1fr;
+        }
+        main {
+          padding: 20px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <aside class="sidebar">
+      <a href="/" class="logo-consistent">
+        <div class="saturn-unified">
+          <div class="rings"></div>
+          <div class="planet"></div>
+        </div>
+        <span>Orbit</span>
+      </a>
+
+      <div class="sidebar-section">
+        <h3>Configuration</h3>
+        <div class="info-card">
+          Settings are stored locally in your browser. Themes and cloaks will
+          persist across all Orbit modules.
+        </div>
+      </div>
+
+      <div class="sidebar-section">
+        <h3>Quick Tips</h3>
+        <div class="info-card">
+          • Tab cloaking changes the browser tab title and icon<br />
+          • Themes customize the entire interface appearance<br />
+          • All changes save automatically
+        </div>
+      </div>
+    </aside>
+
+    <main>
+      <div class="hero">
+        <h1>Settings</h1>
+        <p>
+          Customize your space. Switch themes for a new look or use tab cloaking
+          for enhanced privacy.
+        </p>
+      </div>
+
+      <div class="settings-grid">
+        <div class="panel">
+          <h2>Tab Cloak <span class="badge-new">14 presets</span></h2>
+          <div class="preset-grid" id="cloakPresets"></div>
+        </div>
+
+        <div class="panel">
+          <h2>Visual Theme <span class="badge-new">5 themes</span></h2>
+          <div class="preset-grid" id="themePresets"></div>
+        </div>
+      </div>
+
+      <div class="footer-actions">
+        <button class="btn" onclick="resetSettings()">Reset Defaults</button>
+        <button class="btn danger" onclick="clearAll()">Clear Storage</button>
+      </div>
+    </main>
+
+    <div id="taskbar"></div>
+
+    <script src="/orbit-global.js"></script>
+    <script>
+      function isDataUrl(url) {
+        return url && url.startsWith("data:image/svg+xml");
+      }
+
+      function getIconHtml(preset) {
+        const icon = preset.icon;
+
+        if (!icon) {
+          return `<div class="preset-icon"><div class="svg-icon" style="width:28px;height:28px;background:rgba(255,255,255,0.1);border-radius:6px;"></div></div>`;
+        }
+
+        // Check if it's a data URL (SVG) or regular URL
+        if (isDataUrl(icon)) {
+          return `<div class="preset-icon"><img src="${icon}" alt="" class="svg-icon"></div>`;
+        } else {
+          // Regular URL - use img tag with crossOrigin and fallback
+          return `<div class="preset-icon"><img src="${icon}" alt="" loading="lazy" onerror="this.src='/logo.png'"></div>`;
+        }
+      }
+
+      function render() {
+        const prefs = window.OrbitPrefs;
+        if (!prefs) {
+          console.warn("OrbitPrefs not loaded yet, retrying...");
+          setTimeout(render, 100);
+          return;
+        }
+
+        const cloakWrap = document.getElementById("cloakPresets");
+        const themeWrap = document.getElementById("themePresets");
+        const activeCloak = prefs.getActiveCloak();
+        const activeTheme = prefs.getActiveTheme();
+
+        if (cloakWrap) cloakWrap.innerHTML = "";
+        if (themeWrap) themeWrap.innerHTML = "";
+
+        // Render cloak presets
+        Object.entries(prefs.CLOAK_PRESETS).forEach(([key, preset]) => {
+          const btn = document.createElement("button");
+          btn.className = `preset-btn ${key === activeCloak ? "active" : ""}`;
+          btn.innerHTML = `
+            ${getIconHtml(preset)}
+            <div class="preset-meta">
+              <span class="name">${preset.label}${key === "orbit" ? ' <span style="font-size:0.6rem;opacity:0.5;">(default)</span>' : ""}</span>
+              <span class="desc">${preset.desc || key.charAt(0).toUpperCase() + key.slice(1) + " preset"}</span>
+            </div>
+          `;
+          btn.onclick = () => {
+            prefs.saveCloak(key === "orbit" ? "" : key);
+            render();
+          };
+          if (cloakWrap) cloakWrap.appendChild(btn);
+        });
+
+        // Render theme presets
+        Object.entries(prefs.THEME_PRESETS).forEach(([key, preset]) => {
+          const btn = document.createElement("button");
+          btn.className = `preset-btn ${key === activeTheme ? "active" : ""}`;
+
+          // Theme preview color circle
+          const accentColor = preset.vars["--accent"] || "#ffffff";
+
+          btn.innerHTML = `
+            <div class="preset-icon">
+              <div style="width:28px;height:28px;border-radius:8px;background:${accentColor};box-shadow:0 0 10px ${accentColor};"></div>
+            </div>
+            <div class="preset-meta">
+              <span class="name">${preset.label}</span>
+              <span class="desc">${preset.desc || key.charAt(0).toUpperCase() + key.slice(1) + " theme"}</span>
+            </div>
+          `;
+          btn.onclick = () => {
+            prefs.saveTheme(key);
+            render();
+          };
+          if (themeWrap) themeWrap.appendChild(btn);
+        });
+      }
+
+      function resetSettings() {
+        if (!window.OrbitPrefs) return;
+        if (confirm("Reset all settings to factory defaults?")) {
+          window.OrbitPrefs.saveTheme("midnight");
+          window.OrbitPrefs.saveCloak("");
+          render();
+        }
+      }
+
+      function clearAll() {
+        if (
+          confirm(
+            "⚠️ This will clear ALL Orbit data and preferences. Continue?",
+          )
+        ) {
+          localStorage.clear();
+          window.location.reload();
+        }
+      }
+
+      // Wait for prefs to init
+      if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", render);
+      } else {
+        render();
+      }
+    </script>
+  </body>
+</html>

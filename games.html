@@ -1,0 +1,1152 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, user-scalable=yes"
+    />
+    <title>Orbit — Games</title>
+    <link rel="icon" href="/logo.png" type="image/png" />
+    <!-- Global theme & taskbar system (exactly like index.html) -->
+    <link rel="stylesheet" href="/orbit.css" />
+    <script src="/orbit-prefs.js"></script>
+    <style>
+      /* Games page specific styles - does NOT interfere with global theme/taskbar */
+      @import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap");
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      :root {
+        --glow-sm: 0 0 10px rgba(255, 255, 255, 0.25);
+        --glow-md:
+          0 0 20px rgba(255, 255, 255, 0.2), 0 0 40px rgba(255, 255, 255, 0.08);
+        --glow-lg:
+          0 0 30px rgba(255, 255, 255, 0.3), 0 0 60px rgba(255, 255, 255, 0.1);
+        --taskbar-height: 64px;
+      }
+
+      html,
+      body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family: "Inter", system-ui, sans-serif;
+        background: #000;
+        color: #fff;
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+        padding-bottom: var(
+          --taskbar-height
+        ); /* leave space for fixed taskbar */
+        position: relative;
+      }
+
+      /* ===== HEADER ===== */
+      header {
+        position: sticky;
+        top: 0;
+        z-index: 50;
+        background: rgba(0, 0, 0, 0.92);
+        backdrop-filter: blur(16px);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      }
+      .header-inner {
+        max-width: 1300px;
+        margin: 0 auto;
+        padding: 10px 24px;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+      }
+
+      /* Mini Saturn */
+      .saturn-mini {
+        width: 32px;
+        height: 32px;
+        position: relative;
+        flex-shrink: 0;
+      }
+      .saturn-mini .p {
+        width: 22px;
+        height: 22px;
+        border-radius: 50%;
+        background: radial-gradient(
+          circle at 38% 35%,
+          #555 0%,
+          #111 55%,
+          #000 100%
+        );
+        box-shadow:
+          0 0 0 1px rgba(255, 255, 255, 0.15),
+          0 0 10px 3px rgba(255, 255, 255, 0.08);
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 2;
+      }
+      .saturn-mini .rw {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 42px;
+        height: 12px;
+        transform: translate(-50%, -50%) rotateX(70deg);
+        z-index: 1;
+      }
+      .saturn-mini .rw::after {
+        content: "";
+        position: absolute;
+        bottom: -2px;
+        left: -4px;
+        right: -4px;
+        height: 55%;
+        background: #000;
+        border-radius: 0 0 50% 50%;
+        z-index: 3;
+      }
+      .saturn-mini .ri {
+        position: absolute;
+        inset: 0;
+        border-radius: 50%;
+        border: 2px solid rgba(255, 255, 255, 0.5);
+        box-shadow: 0 0 6px rgba(255, 255, 255, 0.25);
+      }
+
+      .brand-link {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        text-decoration: none;
+        flex-shrink: 0;
+      }
+      .brand-link span {
+        font-size: 0.95rem;
+        font-weight: 700;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: #fff;
+        text-shadow: 0 0 12px rgba(255, 255, 255, 0.4);
+      }
+
+      .search-row {
+        flex: 1;
+        display: flex;
+        gap: 10px;
+        align-items: center;
+      }
+      .search-row input,
+      .search-row select {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 2px;
+        color: #fff;
+        font-family: inherit;
+        padding: 8px 12px;
+        font-size: 0.85rem;
+        outline: none;
+        transition:
+          border-color 0.2s,
+          box-shadow 0.2s;
+      }
+      .search-row input {
+        flex: 1;
+      }
+      .search-row select option {
+        background: #111;
+      }
+      .search-row input::placeholder {
+        color: rgba(255, 255, 255, 0.2);
+      }
+      .search-row input:focus,
+      .search-row select:focus {
+        border-color: rgba(255, 255, 255, 0.5);
+        box-shadow: var(--glow-sm);
+      }
+      .search-row select {
+        min-width: 120px;
+        cursor: pointer;
+      }
+
+      .hdr-btn {
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        color: rgba(255, 255, 255, 0.7);
+        padding: 8px 14px;
+        font-family: inherit;
+        font-size: 0.75rem;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        cursor: pointer;
+        border-radius: 2px;
+        transition: all 0.15s;
+        flex-shrink: 0;
+      }
+      .hdr-btn:hover {
+        border-color: rgba(255, 255, 255, 0.5);
+        color: #fff;
+        box-shadow: var(--glow-sm);
+      }
+
+      /* ===== MAIN ===== */
+      main {
+        flex: 1;
+        max-width: 1300px;
+        width: 100%;
+        margin: 0 auto;
+        padding: 24px 24px 12px;
+      }
+
+      .section-label {
+        font-size: 0.7rem;
+        letter-spacing: 0.3em;
+        text-transform: uppercase;
+        color: rgba(255, 255, 255, 0.3);
+        margin-bottom: 16px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .section-label::after {
+        content: "";
+        flex: 1;
+        height: 1px;
+        background: rgba(255, 255, 255, 0.06);
+      }
+
+      /* ===== GAME GRID ===== */
+      .zone-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+        gap: 2px;
+        margin-bottom: 32px;
+      }
+
+      .zone-card {
+        background: #0a0a0a;
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        cursor: pointer;
+        transition:
+          border-color 0.2s,
+          box-shadow 0.2s,
+          transform 0.2s;
+        overflow: hidden;
+        position: relative;
+      }
+      .zone-card:hover {
+        border-color: rgba(255, 255, 255, 0.4);
+        box-shadow: var(--glow-md);
+        transform: translateY(-3px);
+        z-index: 2;
+      }
+      .zone-card img {
+        width: 100%;
+        aspect-ratio: 1;
+        object-fit: cover;
+        display: block;
+        background: #0d0d0d;
+        transition:
+          transform 0.3s,
+          filter 0.3s;
+        filter: grayscale(30%) brightness(0.9);
+      }
+      .zone-card:hover img {
+        transform: scale(1.06);
+        filter: grayscale(0%) brightness(1.05);
+      }
+      .zone-card .card-label {
+        padding: 10px 12px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: rgba(255, 255, 255, 0.65);
+        transition: color 0.2s;
+        line-height: 1.3;
+      }
+      .zone-card:hover .card-label {
+        color: #fff;
+        text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+      }
+
+      .featured-badge {
+        position: absolute;
+        top: 8px;
+        left: 8px;
+        background: rgba(255, 255, 255, 0.12);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        padding: 2px 8px;
+        font-size: 0.62rem;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: rgba(255, 255, 255, 0.8);
+        backdrop-filter: blur(4px);
+      }
+
+      #statusMsg {
+        text-align: center;
+        padding: 40px;
+        color: rgba(255, 255, 255, 0.25);
+        font-size: 0.85rem;
+        letter-spacing: 0.1em;
+      }
+
+      /* ===== PERSISTENT DOCK TASKBAR - ALWAYS VISIBLE, FOLLOWS POV ===== */
+      #taskbar {
+        position: fixed !important;
+        bottom: 16px !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+        z-index: 10000 !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 10px !important;
+        height: 56px !important;
+        padding: 0 24px !important;
+        background: rgba(10, 10, 15, 0.92) !important;
+        backdrop-filter: blur(24px) !important;
+        border-radius: 48px !important;
+        border: 1px solid rgba(255, 255, 255, 0.18) !important;
+        box-shadow:
+          0 10px 35px rgba(0, 0, 0, 0.6),
+          0 0 0 1px rgba(255, 255, 255, 0.05) !important;
+        width: auto !important;
+        min-width: 280px !important;
+        max-width: 90vw !important;
+        overflow-x: auto !important;
+        white-space: nowrap !important;
+        font-family: "Inter", system-ui, sans-serif !important;
+        transition: all 0.2s cubic-bezier(0.2, 0.9, 0.4, 1.1) !important;
+      }
+
+      /* Hide scrollbar for cleaner look */
+      #taskbar::-webkit-scrollbar {
+        display: none;
+      }
+
+      /* Taskbar item styling - interactive dock items */
+      .taskbar-item {
+        display: inline-flex !important;
+        align-items: center !important;
+        gap: 8px !important;
+        padding: 8px 18px !important;
+        background: rgba(255, 255, 255, 0.06) !important;
+        border-radius: 40px !important;
+        color: rgba(255, 255, 255, 0.85) !important;
+        font-size: 0.85rem !important;
+        font-weight: 500 !important;
+        letter-spacing: 0.02em !important;
+        transition: all 0.2s ease !important;
+        cursor: pointer !important;
+        border: none !important;
+        backdrop-filter: blur(4px) !important;
+      }
+
+      .taskbar-item:hover {
+        background: rgba(255, 255, 255, 0.2) !important;
+        color: white !important;
+        transform: translateY(-2px) scale(1.02) !important;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+      }
+
+      .taskbar-item:active {
+        transform: translateY(1px) scale(0.98) !important;
+      }
+
+      .taskbar-separator {
+        width: 1px !important;
+        height: 30px !important;
+        background: rgba(255, 255, 255, 0.2) !important;
+        margin: 0 6px !important;
+      }
+
+      .game-count-badge {
+        background: rgba(255, 255, 255, 0.25) !important;
+        border-radius: 30px !important;
+        padding: 2px 10px !important;
+        font-size: 0.7rem !important;
+        font-weight: 700 !important;
+        margin-left: 8px !important;
+      }
+
+      /* ===== GAME VIEWER - Allows scrolling within game ===== */
+      #zoneViewer {
+        display: none;
+        position: fixed;
+        inset: 0;
+        z-index: 200;
+        flex-direction: column;
+        background: #000;
+        animation: fadeIn 0.3s ease;
+      }
+
+      #zoneViewer.open {
+        display: flex;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+
+      .viewer-bar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 12px 24px;
+        background: rgba(0, 0, 0, 0.95);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(12px);
+        flex-shrink: 0;
+        z-index: 10;
+      }
+
+      .viewer-title {
+        font-size: 0.9rem;
+        font-weight: 600;
+        letter-spacing: 0.08em;
+        color: rgba(255, 255, 255, 0.9);
+      }
+
+      .viewer-author {
+        font-size: 0.7rem;
+        color: rgba(255, 255, 255, 0.4);
+        margin-top: 4px;
+      }
+
+      .viewer-controls {
+        display: flex;
+        gap: 12px;
+      }
+
+      .viewer-controls button {
+        background: rgba(255, 255, 255, 0.07);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        color: rgba(255, 255, 255, 0.7);
+        padding: 8px 16px;
+        font-family: inherit;
+        font-size: 0.75rem;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        cursor: pointer;
+        border-radius: 8px;
+        transition: all 0.15s;
+        font-weight: 500;
+      }
+
+      .viewer-controls button:hover {
+        border-color: rgba(255, 255, 255, 0.5);
+        color: #fff;
+        background: rgba(255, 255, 255, 0.12);
+        transform: translateY(-1px);
+      }
+
+      .viewer-controls .close-btn {
+        border-color: rgba(255, 80, 80, 0.4);
+        color: rgba(255, 120, 120, 0.9);
+      }
+
+      .viewer-controls .close-btn:hover {
+        border-color: rgba(255, 80, 80, 0.9);
+        color: #ff6060;
+        background: rgba(255, 60, 60, 0.15);
+        box-shadow: 0 0 12px rgba(255, 60, 60, 0.2);
+      }
+
+      /* Game iframe container - scrollable */
+      .iframe-container {
+        flex: 1;
+        width: 100%;
+        overflow-y: auto;
+        overflow-x: hidden;
+        background: #000;
+        position: relative;
+      }
+
+      #zoneFrame {
+        width: 100%;
+        height: 100%;
+        border: none;
+        display: block;
+        background: #fff;
+      }
+
+      /* Ensure iframe content can scroll naturally */
+      #zoneFrame body {
+        overflow-y: auto !important;
+      }
+
+      /* ===== LOADING DOTS ===== */
+      .loading-dots::after {
+        content: "";
+        animation: dots 1.5s infinite;
+      }
+      @keyframes dots {
+        0% {
+          content: ".";
+        }
+        33% {
+          content: "..";
+        }
+        66% {
+          content: "...";
+        }
+      }
+
+      /* ===== POPUP ===== */
+      #popupOverlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.85);
+        backdrop-filter: blur(12px);
+        z-index: 400;
+        align-items: center;
+        justify-content: center;
+      }
+      #popupOverlay.open {
+        display: flex;
+      }
+      .popup {
+        background: #121212;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 16px;
+        max-width: 480px;
+        width: 90%;
+        box-shadow: var(--glow-lg);
+      }
+      .popup-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 18px 24px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      }
+      .popup-title {
+        font-size: 0.9rem;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        font-weight: 600;
+      }
+      .popup-close {
+        background: none;
+        border: none;
+        color: rgba(255, 255, 255, 0.5);
+        cursor: pointer;
+        font-size: 1.4rem;
+        padding: 0;
+        line-height: 1;
+        transition: color 0.15s;
+      }
+      .popup-close:hover {
+        color: #fff;
+      }
+      .popup-body {
+        padding: 24px;
+        color: rgba(255, 255, 255, 0.7);
+        font-size: 0.9rem;
+        line-height: 1.6;
+      }
+
+      #proxyBarOverlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.75);
+        backdrop-filter: blur(12px);
+        z-index: 400;
+        align-items: flex-end;
+        justify-content: center;
+        padding-bottom: 100px;
+      }
+
+      @media (max-width: 600px) {
+        .search-row select {
+          display: none;
+        }
+        .zone-grid {
+          grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+        }
+        #taskbar {
+          bottom: 12px !important;
+          padding: 0 16px !important;
+          height: 50px !important;
+          gap: 6px !important;
+        }
+        .taskbar-item {
+          padding: 6px 12px !important;
+          font-size: 0.75rem !important;
+        }
+        .viewer-bar {
+          padding: 10px 16px;
+        }
+        .viewer-controls button {
+          padding: 6px 12px;
+          font-size: 0.65rem;
+        }
+        body {
+          padding-bottom: 70px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Taskbar will be populated by orbit-global.js, but we enforce dock styling -->
+    <div id="taskbar"></div>
+
+    <!-- HEADER -->
+    <header>
+      <div class="header-inner">
+        <a class="brand-link" href="/">
+          <div class="saturn-mini">
+            <div class="rw"><div class="ri"></div></div>
+            <div class="p"></div>
+          </div>
+          <span>Orbit</span>
+        </a>
+
+        <div class="search-row">
+          <input
+            type="text"
+            id="searchBar"
+            placeholder="Search games..."
+            oninput="filterZones()"
+          />
+          <select id="sortOptions" onchange="sortZones()">
+            <option value="name">A–Z</option>
+            <option value="id">Date Added</option>
+            <option value="popular">Most Played</option>
+            <option value="trendingDay">Trending Today</option>
+            <option value="trendingWeek">Trending Week</option>
+            <option value="trendingMonth">Trending Month</option>
+          </select>
+          <select id="filterOptions" onchange="filterByTag()">
+            <option value="none">All Tags</option>
+          </select>
+          <button class="hdr-btn" onclick="listZones()" title="Refresh">
+            &#8635; Refresh
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- MAIN -->
+    <main>
+      <div class="section-label" id="featuredLabel">Featured</div>
+      <div class="zone-grid" id="featuredZones"></div>
+
+      <div class="section-label" id="allLabel">All Games</div>
+      <div id="statusMsg" class="loading-dots">Loading games</div>
+      <div class="zone-grid" id="container"></div>
+    </main>
+
+    <!-- GAME VIEWER - with scrollable container -->
+    <div id="zoneViewer">
+      <div class="viewer-bar">
+        <div>
+          <div class="viewer-title" id="zoneName">Game</div>
+          <div class="viewer-author" id="zoneAuthor"></div>
+        </div>
+        <div class="viewer-controls">
+          <button onclick="fullscreenZone()">&#x26F6; Fullscreen</button>
+          <button onclick="aboutBlank()">&#8599; New Tab</button>
+          <button onclick="downloadZone()">&#8595; Download</button>
+          <button class="close-btn" onclick="closeZone()">
+            &#10005; Close
+          </button>
+        </div>
+      </div>
+      <div class="iframe-container" id="iframeContainer">
+        <iframe id="zoneFrame" allow="fullscreen"></iframe>
+      </div>
+    </div>
+
+    <!-- POPUP -->
+    <div id="popupOverlay">
+      <div class="popup">
+        <div class="popup-header">
+          <span class="popup-title" id="popupTitle">Info</span>
+          <button class="popup-close" onclick="closePopup()">&#10005;</button>
+        </div>
+        <div class="popup-body" id="popupBody"></div>
+      </div>
+    </div>
+
+    <!-- PROXY BAR POPUP -->
+    <div id="proxyBarOverlay">
+      <div
+        style="
+          background: #121212;
+          border: 1px solid rgba(255, 255, 255, 0.2);
+          border-radius: 16px;
+          padding: 20px;
+          max-width: 540px;
+          width: 90%;
+          box-shadow: 0 0 40px rgba(0, 0, 0, 0.5);
+        "
+      >
+        <div
+          style="
+            font-size: 0.7rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, 0.5);
+            margin-bottom: 12px;
+            font-weight: 600;
+          "
+        >
+          Proxy — Browse Freely
+        </div>
+        <div style="display: flex; gap: 10px">
+          <input
+            id="proxyInput"
+            type="text"
+            placeholder="Search or enter URL..."
+            style="
+              flex: 1;
+              background: rgba(255, 255, 255, 0.05);
+              border: 1px solid rgba(255, 255, 255, 0.2);
+              color: #fff;
+              padding: 12px 16px;
+              font-family: inherit;
+              font-size: 0.9rem;
+              outline: none;
+              border-radius: 12px;
+            "
+          />
+          <button
+            onclick="goProxy()"
+            style="
+              background: rgba(255, 255, 255, 0.1);
+              border: 1px solid rgba(255, 255, 255, 0.25);
+              color: #fff;
+              padding: 12px 20px;
+              font-family: inherit;
+              font-size: 0.75rem;
+              letter-spacing: 0.15em;
+              text-transform: uppercase;
+              cursor: pointer;
+              border-radius: 12px;
+              transition: all 0.15s;
+            "
+          >
+            Go
+          </button>
+          <button
+            onclick="closeProxyBar()"
+            style="
+              background: transparent;
+              border: 1px solid rgba(255, 80, 80, 0.3);
+              color: rgba(255, 100, 100, 0.8);
+              padding: 12px 16px;
+              font-family: inherit;
+              cursor: pointer;
+              border-radius: 12px;
+            "
+          >
+            &#10005;
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Global taskbar script -->
+    <script src="/orbit-global.js"></script>
+
+    <script>
+      // ===== ENFORCE PERSISTENT DOCK TASKBAR =====
+      function enforceDockTaskbar() {
+        const tb = document.getElementById("taskbar");
+        if (!tb) return;
+
+        // Force dock positioning - always fixed at bottom center
+        tb.style.setProperty("position", "fixed", "important");
+        tb.style.setProperty("bottom", "16px", "important");
+        tb.style.setProperty("left", "50%", "important");
+        tb.style.setProperty("transform", "translateX(-50%)", "important");
+        tb.style.setProperty("z-index", "10000", "important");
+        tb.style.setProperty("display", "flex", "important");
+        tb.style.setProperty("align-items", "center", "important");
+        tb.style.setProperty("justify-content", "center", "important");
+        tb.style.setProperty("gap", "10px", "important");
+        tb.style.setProperty("height", "56px", "important");
+        tb.style.setProperty("padding", "0 24px", "important");
+        tb.style.setProperty(
+          "background",
+          "rgba(10, 10, 15, 0.92)",
+          "important",
+        );
+        tb.style.setProperty("backdrop-filter", "blur(24px)", "important");
+        tb.style.setProperty("border-radius", "48px", "important");
+        tb.style.setProperty(
+          "border",
+          "1px solid rgba(255, 255, 255, 0.18)",
+          "important",
+        );
+        tb.style.setProperty(
+          "box-shadow",
+          "0 10px 35px rgba(0, 0, 0, 0.6)",
+          "important",
+        );
+        tb.style.setProperty("width", "auto", "important");
+        tb.style.setProperty("min-width", "280px", "important");
+        tb.style.setProperty("max-width", "90vw", "important");
+        tb.style.setProperty("top", "auto", "important");
+        tb.style.setProperty("right", "auto", "important");
+
+        // Ensure body has padding to prevent content hiding behind taskbar
+        document.body.style.paddingBottom = "76px";
+      }
+
+      // Apply immediately and watch for changes
+      enforceDockTaskbar();
+      const dockObserver = new MutationObserver(() => enforceDockTaskbar());
+      dockObserver.observe(document.body, { childList: true, subtree: false });
+      setInterval(enforceDockTaskbar, 200);
+
+      // ===== PROXY FUNCTIONS =====
+      function openProxyBar() {
+        const el = document.getElementById("proxyBarOverlay");
+        if (el) el.style.display = "flex";
+        setTimeout(() => {
+          const input = document.getElementById("proxyInput");
+          if (input) input.focus();
+        }, 50);
+      }
+      function closeProxyBar() {
+        const el = document.getElementById("proxyBarOverlay");
+        if (el) el.style.display = "none";
+      }
+      function looksLikeUrl(input) {
+        return (
+          /^https?:\/\//i.test(input) ||
+          (/^[a-z0-9-]+(\.[a-z]{2,})+/i.test(input) && !input.includes(" "))
+        );
+      }
+      function goProxy() {
+        const input = document.getElementById("proxyInput");
+        if (!input) return;
+        const value = input.value.trim();
+        if (!value) return;
+        let url = looksLikeUrl(value)
+          ? value.startsWith("http")
+            ? value
+            : "https://" + value
+          : "https://duckduckgo.com/?q=" + encodeURIComponent(value);
+        window.location.href = "/scramjet/" + btoa(url);
+      }
+
+      document.addEventListener("DOMContentLoaded", () => {
+        const proxyInput = document.getElementById("proxyInput");
+        if (proxyInput) {
+          proxyInput.addEventListener("keydown", (e) => {
+            if (e.key === "Enter") goProxy();
+            if (e.key === "Escape") closeProxyBar();
+          });
+        }
+      });
+
+      // ===== GAME ZONE LOGIC =====
+      const zonesurls = [
+        "https://cdn.jsdelivr.net/gh/%67%6e%2d%6d%61%74%68/assets@main/zones.json",
+        "https://cdn.jsdelivr.net/gh/%67%6e%2d%6d%61%74%68/assets@latest/zones.json",
+        "https://cdn.jsdelivr.net/gh/%67%6e%2d%6d%61%74%68/assets/zones.json",
+      ];
+      let zonesURL = zonesurls[Math.floor(Math.random() * zonesurls.length)];
+      const coverURL =
+        "https://cdn.jsdelivr.net/gh/%67%6e%2d%6d%61%74%68/covers@main";
+      const htmlURL =
+        "https://cdn.jsdelivr.net/gh/%67%6e%2d%6d%61%74%68/html@main";
+
+      let zones = [];
+      let popularityData = {};
+      const container = document.getElementById("container");
+      const featuredZones = document.getElementById("featuredZones");
+      const searchBar = document.getElementById("searchBar");
+      const sortOptions = document.getElementById("sortOptions");
+      const filterOptions = document.getElementById("filterOptions");
+      const statusMsg = document.getElementById("statusMsg");
+      let zoneFrame = document.getElementById("zoneFrame");
+      let currentZone = null;
+
+      function updateGameCount(count) {
+        const gameCountSpan = document.getElementById("tbGameCount");
+        if (gameCountSpan) gameCountSpan.textContent = count;
+        else setTimeout(() => updateGameCount(count), 100);
+      }
+
+      async function listZones() {
+        if (statusMsg) {
+          statusMsg.textContent = "Loading games";
+          statusMsg.className = "loading-dots";
+        }
+        if (container) container.innerHTML = "";
+        if (featuredZones) featuredZones.innerHTML = "";
+        try {
+          const res = await fetch(zonesURL + "?t=" + Date.now());
+          const json = await res.json();
+          zones = json;
+          await Promise.all([
+            fetchPopularity("year"),
+            fetchPopularity("month"),
+            fetchPopularity("week"),
+            fetchPopularity("day"),
+          ]);
+
+          const allTags = [...new Set(zones.flatMap((z) => z.special || []))];
+          if (filterOptions) {
+            filterOptions.innerHTML = '<option value="none">All Tags</option>';
+            allTags.forEach((tag) => {
+              const opt = document.createElement("option");
+              opt.value = tag;
+              opt.textContent = tag.charAt(0).toUpperCase() + tag.slice(1);
+              filterOptions.appendChild(opt);
+            });
+          }
+          updateGameCount(zones.length);
+          if (statusMsg) {
+            statusMsg.className = "";
+            statusMsg.textContent = "";
+          }
+          sortZones();
+          const id = new URLSearchParams(window.location.search).get("id");
+          if (id) {
+            const z = zones.find((z) => String(z.id) === String(id));
+            if (z) openZone(z);
+          }
+        } catch (err) {
+          if (statusMsg) {
+            statusMsg.className = "";
+            statusMsg.textContent = "Failed to load games — " + err.message;
+          }
+        }
+      }
+
+      async function fetchPopularity(duration) {
+        try {
+          const res = await fetch(
+            `https://data.jsdelivr.com/v1/stats/packages/gh/%67%6e%2d%6d%61%74%68/html@main/files?period=${duration}`,
+          );
+          const data = await res.json();
+          popularityData[duration] = {};
+          data.forEach((file) => {
+            const m = file.name.match(/\/(\d+)\.html$/);
+            if (m)
+              popularityData[duration][parseInt(m[1])] = file.hits?.total ?? 0;
+          });
+        } catch (_) {
+          popularityData[duration] = {};
+        }
+      }
+
+      function sortZones() {
+        if (!sortOptions) return;
+        const by = sortOptions.value;
+        zones.sort((a, b) => {
+          if (by === "name") return a.name.localeCompare(b.name);
+          if (by === "id") return a.id - b.id;
+          if (by === "popular")
+            return (
+              (popularityData.year?.[b.id] ?? 0) -
+              (popularityData.year?.[a.id] ?? 0)
+            );
+          if (by === "trendingMonth")
+            return (
+              (popularityData.month?.[b.id] ?? 0) -
+              (popularityData.month?.[a.id] ?? 0)
+            );
+          if (by === "trendingWeek")
+            return (
+              (popularityData.week?.[b.id] ?? 0) -
+              (popularityData.week?.[a.id] ?? 0)
+            );
+          if (by === "trendingDay")
+            return (
+              (popularityData.day?.[b.id] ?? 0) -
+              (popularityData.day?.[a.id] ?? 0)
+            );
+          return 0;
+        });
+        renderAll(zones);
+      }
+
+      function filterZones() {
+        const q = searchBar ? searchBar.value.toLowerCase() : "";
+        const tag = filterOptions ? filterOptions.value : "none";
+        let filtered = zones;
+        if (q)
+          filtered = filtered.filter((z) => z.name.toLowerCase().includes(q));
+        if (tag !== "none")
+          filtered = filtered.filter((z) => z.special?.includes(tag));
+        renderAll(filtered, !!q || tag !== "none");
+      }
+
+      function filterByTag() {
+        filterZones();
+      }
+
+      function renderAll(list, hideFeature = false) {
+        const featured = list.filter((z) => z.featured);
+        const all = list;
+        const featuredLabel = document.getElementById("featuredLabel");
+        const featuredGrid = document.getElementById("featuredZones");
+        if (featuredLabel)
+          featuredLabel.style.display =
+            hideFeature || !featured.length ? "none" : "";
+        if (featuredGrid)
+          featuredGrid.style.display =
+            hideFeature || !featured.length ? "none" : "";
+        if (!hideFeature && featured.length && featuredGrid)
+          renderGrid(featuredGrid, featured, true);
+        const allLabel = document.getElementById("allLabel");
+        if (allLabel) allLabel.textContent = `All Games (${all.length})`;
+        if (container) renderGrid(container, all, false);
+      }
+
+      function renderGrid(el, list, isFeatured) {
+        if (!el) return;
+        el.innerHTML = "";
+        list.forEach((zone) => {
+          const card = document.createElement("div");
+          card.className = "zone-card";
+          card.onclick = () => openZone(zone);
+          const img = document.createElement("img");
+          img.dataset.src = zone.cover
+            .replace("{COVER_URL}", coverURL)
+            .replace("{HTML_URL}", htmlURL);
+          img.alt = zone.name;
+          img.loading = "lazy";
+          const obs = new IntersectionObserver(
+            (entries) => {
+              entries.forEach((e) => {
+                if (e.isIntersecting) {
+                  img.src = img.dataset.src;
+                  obs.disconnect();
+                }
+              });
+            },
+            { rootMargin: "120px" },
+          );
+          obs.observe(img);
+          const label = document.createElement("div");
+          label.className = "card-label";
+          label.textContent = zone.name;
+          if (isFeatured) {
+            const badge = document.createElement("div");
+            badge.className = "featured-badge";
+            badge.textContent = "★ Featured";
+            card.appendChild(badge);
+          }
+          card.appendChild(img);
+          card.appendChild(label);
+          el.appendChild(card);
+        });
+      }
+
+      function openZone(zone) {
+        currentZone = zone;
+        if (zone.url.startsWith("http")) {
+          window.open(zone.url, "_blank");
+          return;
+        }
+        const url = zone.url
+          .replace("{COVER_URL}", coverURL)
+          .replace("{HTML_URL}", htmlURL);
+        document.getElementById("zoneName").textContent = zone.name;
+        document.getElementById("zoneAuthor").textContent = zone.author
+          ? "by " + zone.author
+          : "";
+        fetch(url + "?t=" + Date.now())
+          .then((r) => r.text())
+          .then((html) => {
+            html = html.replace(
+              /<script[^>]*motorsnag[^>]*>[\s\S]*?<\/script>/gi,
+              "",
+            );
+            html = html.replace(
+              /<a[^>]+href=["'][^"']*motorsnag[^"']*["'][^>]*>[\s\S]*?<\/a>/gi,
+              "",
+            );
+            if (zoneFrame && zoneFrame.contentDocument) {
+              zoneFrame.contentDocument.open();
+              zoneFrame.contentDocument.write(html);
+              zoneFrame.contentDocument.close();
+            }
+            document.getElementById("zoneViewer").classList.add("open");
+            const u = new URL(window.location);
+            u.searchParams.set("id", zone.id);
+            history.pushState(null, "", u.toString());
+          })
+          .catch((err) =>
+            showPopup("Error", "Failed to load game: " + err.message),
+          );
+      }
+
+      function closeZone() {
+        document.getElementById("zoneViewer").classList.remove("open");
+        const u = new URL(window.location);
+        u.searchParams.delete("id");
+        history.pushState(null, "", u.toString());
+      }
+      function fullscreenZone() {
+        const f = document.getElementById("zoneFrame");
+        if (f && f.requestFullscreen) f.requestFullscreen();
+      }
+      function aboutBlank() {
+        if (!currentZone) return;
+        const url = currentZone.url.replace("{HTML_URL}", htmlURL);
+        fetch(url + "?t=" + Date.now())
+          .then((r) => r.text())
+          .then((html) => {
+            const w = window.open("about:blank", "_blank");
+            w.document.open();
+            w.document.write(html);
+            w.document.close();
+          });
+      }
+      function downloadZone() {
+        if (!currentZone) return;
+        const url = currentZone.url.replace("{HTML_URL}", htmlURL);
+        fetch(url + "?t=" + Date.now())
+          .then((r) => r.text())
+          .then((text) => {
+            const a = document.createElement("a");
+            a.href = URL.createObjectURL(
+              new Blob([text], { type: "text/html" }),
+            );
+            a.download = currentZone.name + ".html";
+            a.click();
+          });
+      }
+      function showPopup(title, body) {
+        document.getElementById("popupTitle").textContent = title;
+        document.getElementById("popupBody").innerHTML = body;
+        document.getElementById("popupOverlay").classList.add("open");
+      }
+      function closePopup() {
+        document.getElementById("popupOverlay").classList.remove("open");
+      }
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") {
+          closeZone();
+          closePopup();
+          closeProxyBar();
+        }
+      });
+
+      listZones();
+    </script>
+  </body>
+</html>
